@@ -150,7 +150,7 @@ const createReviewBatch = (listId, quantity) => {
 };
 
 // let ratingsStream = fs.createWriteStream('database/seeder/newRatingsIV.csv');
-let reviewsStream = fs.createWriteStream('database/seeder/newReviewsIV.csv');
+// let reviewsStream = fs.createWriteStream('newReviewsV.csv');
 
 const writeTenMillionRatings = (cb) => {
   const writeOnce = (prodId) => {
@@ -226,9 +226,34 @@ const writeTenMillionReviews = (cb) => {
   writeOnce(0);
 };
 
-writeTenMillionReviews(() => {
-  console.log('Ten million written!');
-});
+const writeTenReviews = (cb) => {
+  const writeOnce = (prodId) => {
+    dataIsLeft = true;
+    do {
+      console.log(prodId);
+      if (prodId === 11) {
+        reviewsStream.write(createReviewBatch(prodId, randomNumberBetween(1, 6)), cb);
+      } else {
+        dataIsLeft = reviewsStream.write(createReviewBatch(prodId, randomNumberBetween(1, 6)));
+        prodId++;
+      }
+    } while (prodId < 11 && dataIsLeft);
+    if (prodId < 11) {
+      reviewsStream.once('drain', () => {
+        console.log('Successfully drained');
+        writeOnce(prodId);
+      });
+    }
+  };
+  writeOnce(0);
+};
+
+//writeTenReviews(() => {
+//  console.log('One Thousand Reviews Written!');
+//});
+//writeTenMillionReviews(() => {
+//  console.log('Ten million written!');
+//});
 
 const createAccuracyBatch = (quantity) => {
   ratingsBatch = '';

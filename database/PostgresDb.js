@@ -94,15 +94,23 @@ const randomNumber = require('./seeder/fakeDataPg.js').randomNumberBetween;
 
 const pg = require('pg');
 const client = new pg.Client({
-  user: 'samgoldie',
-  host: 'localhost',
+  password: 'whaleManner',
+  user: 'postgres',
+  // host: 'ec2-18-222-249-131.us-east-2.compute.amazonaws.com',
   database: 'listdb',
-  port: 5432
+  port: '5432'
 });
 
-client.connect(() => {
-  console.log('connected to postgres db');
+client.connect((err) => {
+  console.log('heres an error: ' + err);
 }); // callback here??
+
+//client.query('select * from reviews where reviewsid = 1;', (err, res) => {
+//  if (err) {
+//    console.log(err);
+//  }
+//  console.log(res);
+//});
 
 const postDataToRatings = (params, id, callback) => {
   console.log('HERE ARE THE PARAMS TO POST DATA');
@@ -147,11 +155,22 @@ const getRatings = (allIds, callback) => {
 };
 
 const getReviews = (id, callback) => {
-  id = id || randomNumber(9800000, 10000000);
-  var query = `SELECT * FROM reviews WHERE listingid = ${id};`; //currently, this targets reviewsid. I will need to make it work for listingId in particular
-  console.log('heres the review query Im about to send: ' + query);
-  client.query(query, (err, res) => {
+  client.query('select * from reviews where reviewsid = 1;', (err, res) => {
+  console.log('Im inside the callback of my test query!');
+  if (err) {
+    console.log(err);
+  }
+  console.log('heres the result: ' + res);
+});
+ // console.log('heres the client: ' + JSON.stringify(client));
+ // id = randomNumber(980000, 1000000);
+//  var query = `SELECT * FROM reviews WHERE listingid = 6554;`; //currently, this targets reviewsid. I will need to make it work for listingId in particular
+  console.log('hello!!!');
+  client.query('SELECT * FROM reviews WHERE listingid = 6554;', (err, res) => {
     console.log('whats in the response to reviews request: ' + JSON.stringify(res));
+//    client.end(() => {
+//      console.log('client closed');
+//    });
     if (err) {
       callback(err);
     } else {
@@ -159,6 +178,15 @@ const getReviews = (id, callback) => {
     }
   });
 };
+
+//const { Client } = require('pg')
+//const client = new Client()
+//client.connect()
+//client.query('SELECT NOW()', (err, res) => {
+//  if (err) throw err
+//  console.log(res)
+//  client.end()
+//})
 
 // the connection doesn't seem to close, which is odd
 

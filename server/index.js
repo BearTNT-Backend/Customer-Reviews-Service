@@ -10,12 +10,31 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('../database/PostgresDb.js');
 const path = require('path');
+const cors = require('cors');
 const app = express();
+
 const port = 3333;
+
+const corsOptions = {
+  origin: '*',
+  optionsSuccessStatus: 200
+};
 
 console.log(path.join(__dirname, '../public'));
 
 
+//app.use(function(req, res) {
+//  res.header("Access-Control-Allow-Origin", "*");
+//  res.header(
+//    "Access-Control-Allow-Headers",
+//    "Origin, X-Requested-With, Content-Type, Accept"
+//  );
+//  res.header(
+//    "Referrer-Policy", "unsafe-url"
+//  );
+//});
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, '../public')));
@@ -46,7 +65,7 @@ app.post('/api/reviews-module/reviews/:id', (req, res) => {
 });
 
 // this is a READ route for reviews
-app.get('/api/reviews-module/reviews/:id', (req, res) => {
+app.get('/api/reviews-module/reviews/:id', cors(corsOptions), (req, res) => {
   console.log('About to get all reviews');
   console.log('wonder what req.params.id really is...' + typeof req.params.id);
   db.getReviews(req.params.id, (err, results) => {
